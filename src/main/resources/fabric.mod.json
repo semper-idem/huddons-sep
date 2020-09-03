@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "id": "sep",
+  "version": "${version}",
+  "name": "Status Effects+",
+  "description": "Changes the way status effects are render on your screen",
+  "authors": [
+    "akio"
+  ],
+  "contributors": [],
+  "contact": {},
+  "license": "GNU GENERAL PUBLIC LICENSE",
+  "icon": "assets/sep/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "sep.SEPInitializer"
+    ],
+    "client": [],
+    "server": []
+  },
+  "mixins": [
+    "sep.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.9.1",
+    "fabric": "*"
+  }
+}

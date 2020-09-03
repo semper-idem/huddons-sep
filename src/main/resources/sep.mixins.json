@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "package": "sep.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "PotionItemMixin"
+  ],
+  "client": [
+    "InGameHudMixin"
+  ],
+  "server": [],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
