@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Properties;
 
+
 public class SEPConfig {
     //I really dont know how to config, its just freestyle B)
     private final static String propertiesPath =  (Paths.get("").toAbsolutePath().toString() + "/config/statuseffectsplus.properties");

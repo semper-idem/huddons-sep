@@ -24,7 +24,7 @@ import java.util.List;
 
 @Environment(EnvType.CLIENT)
 public class StatusEffectHUDFeature extends DrawableHelper{
-    private final static Identifier NUMS = new Identifier("sep", "textures/nums.png");
+    private final static Identifier NUMBERS = new Identifier("sep", "textures/nums.png");
     private final static MinecraftClient client = MinecraftClient.getInstance();
     private int scaledWidth = client.getWindow().getScaledWidth();
     private int scaledHeight = client.getWindow().getScaledHeight();
@@ -116,7 +116,7 @@ public class StatusEffectHUDFeature extends DrawableHelper{
     }
 
     private void renderAmplifier(MatrixStack matrixStack, int x, int y, int lvl){
-        client.getTextureManager().bindTexture(NUMS);
+        client.getTextureManager().bindTexture(NUMBERS);
         String number = String.valueOf(lvl);
         char[] digits = number.toCharArray();
         for(int i = digits.length - 1; i >= 0; i--){

@@ -7,6 +7,7 @@ import net.minecraft.potion.PotionUtil;
 import org.spongepowered.asm.mixin.Mixin;
 import sep.config.SEPConfig;
 
+
 @Mixin(PotionItem.class)
 public class PotionItemMixin extends Item {
 

@@ -18,7 +18,6 @@ import sep.config.widgets.WSEPLabeledSlider;
 public class SEPConfigGui extends EmptyGuiDescription {
     private final static int buttonSpace = 24;
     public SEPConfigGui(){
-        //TODO: Proper way to handle window size (or mojang way)
         int width = 310;
         int height = MinecraftClient.getInstance().getWindow().getScaledHeight();
         int labelSpace = (height - buttonSpace * 8) > 40 ? (height - buttonSpace * 8 - 20) / 6 : 20;
