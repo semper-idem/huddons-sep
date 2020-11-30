@@ -14,21 +14,17 @@ minecraft {
 }
 
 repositories {
-	maven {
-		name = "CottonMC"
-		url = "https://server.bbkr.space/artifactory/libs-release"
-	}
 }
 dependencies {
 	//to change the versions see the gradle.properties file
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+	modImplementation "io.github.prospector:modmenu:${project.modmenu_version}"
+    modImplementation "me.shedaniel.cloth:config-2:${project.cloth_config_version}"
 
-	modCompile "io.github.cottonmc:LibGui:${project.lib_gui_version}"
-	include "io.github.cottonmc:LibGui:${project.lib_gui_version}"
+    include "me.shedaniel.cloth:config-2:${project.cloth_config_version}"
 }
 
 processResources {

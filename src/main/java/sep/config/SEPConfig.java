@@ -1,166 +1,175 @@
 package sep.config;
 
 import java.io.*;
-import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Properties;
 
 
 public class SEPConfig {
-    //I really dont know how to config, its just freestyle B)
-    private final static String propertiesPath =  (Paths.get("").toAbsolutePath().toString() + "/config/statuseffectsplus.properties");
-    private static Properties settings = new Properties();
-    private static int potion_glint;
-    private static int mode;
-    private static int x_offset;
-    private static int y_offset;
-    private static int x_alignment;
-    private static int x_arrangement;
-    private static int y_arrangement;
-    private static int x_space;
-    private static int y_space;
-    private static int color_auto;
-    private static int color_background;
-    private static int color_name;
-    private static int color_duration;
-    private static boolean dirty = true;
+    public enum Mode {
+        INLINE,
+        CLASSIC
+    }
 
-    public static void init(){
-        if(Files.exists(Paths.get(propertiesPath))){
-            loadSettings();
-        }else{
-            createDefaultConfig();
+    public enum XAxis {
+        LEFT,
+        CENTER,
+        RIGHT
+    }
+
+    public enum YAxis {
+        UP,
+        CENTER,
+        DOWN
+    }
+    private static File configFile = new File(Paths.get("").toAbsolutePath().toString() + "/config/statuseffectsplus.properties");
+
+    public static boolean potionGlint;
+    public static Mode mode;
+    public static float xOffset;
+    public static float yOffset;
+    public static XAxis xAlignment;
+    public static XAxis xArrangement;
+    public static YAxis yArrangement;
+    public static int xSpace;
+    public static int ySpace;
+    public static boolean colorAuto;
+    public static int colorBackground;
+    public static int colorName;
+    public static int colorDuration;
+
+    public static void saveConfig() throws IOException {
+        FileOutputStream fos = new FileOutputStream(configFile, false);
+        fos.write(("# Status Effect Plus Config | " + LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) + "\n").getBytes());
+        fos.write(("potionGlint=" + potionGlint+"\n").getBytes());
+        fos.write(("mode=" + mode+"\n").getBytes());
+        fos.write(("xOffset=" + xOffset+"\n").getBytes());
+        fos.write(("yOffset=" + yOffset+"\n").getBytes());
+        fos.write(("xAlignment=" + xAlignment+"\n").getBytes());
+        fos.write(("xArrangement=" + xArrangement+"\n").getBytes());
+        fos.write(("yArrangement=" + yArrangement+"\n").getBytes());
+        fos.write(("xSpace=" + xSpace+"\n").getBytes());
+        fos.write(("ySpace=" + ySpace+"\n").getBytes());
+        fos.write(("colorAuto=" + colorAuto+"\n").getBytes());
+        fos.write(("colorBackgroundA=" + ((colorBackground >> 24) & 255)+"\n").getBytes());
+        fos.write(("colorBackgroundR=" + ((colorBackground >> 16) & 255)+"\n").getBytes());
+        fos.write(("colorBackgroundB=" + ((colorBackground >> 8) & 255)+"\n").getBytes());
+        fos.write(("colorBackgroundG=" + ((colorBackground) & 255)+"\n").getBytes());
+        fos.write(("colorNameA=" + ((colorName >> 24) & 255)+"\n").getBytes());
+        fos.write(("colorNameR=" + ((colorName >> 16) & 255)+"\n").getBytes());
+        fos.write(("colorNameB=" + ((colorName >> 8) & 255)+"\n").getBytes());
+        fos.write(("colorNameG=" + ((colorName) & 255)+"\n").getBytes());
+        fos.write(("colorDurationA=" + ((colorDuration >> 24) & 255)+"\n").getBytes());
+        fos.write(("colorDurationR=" + ((colorDuration >> 16) & 255)+"\n").getBytes());
+        fos.write(("colorDurationB=" + ((colorDuration >> 8) & 255)+"\n").getBytes());
+        fos.write(("colorDurationG=" + ((colorDuration) & 255)+"\n").getBytes());
+        fos.close();
+
+    }
+
+    public static void loadConfig(){
+        try{
+            if (!configFile.exists() || !configFile.canRead())
+                saveConfig();
+
+            Properties properties = new Properties();
+            try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(configFile)))) {
+                String line = br.readLine();
+                if (!line.startsWith("# Status Effect Plus Config")) {
+                    initWithDefault();
+                    saveConfig();
+                }
+                properties.load(br);
+
+            try{
+                potionGlint = ((String) properties.computeIfAbsent("potionGlint", a -> "true")).equalsIgnoreCase("true");
+                mode = Mode.valueOf((String) properties.computeIfAbsent("mode", o -> Mode.CLASSIC));
+                xOffset = Float.parseFloat((String) properties.computeIfAbsent("xOffset", o -> "99.9"));
+                yOffset = Float.parseFloat((String) properties.computeIfAbsent("yOffset", o -> "0.75"));
+                xAlignment = XAxis.valueOf((String)properties.computeIfAbsent("xAlignment", o -> XAxis.RIGHT));
+                xArrangement =XAxis.valueOf((String)properties.computeIfAbsent("xArrangement", o -> XAxis.LEFT));
+                yArrangement =YAxis.valueOf((String)properties.computeIfAbsent("yArrangement", o -> YAxis.CENTER));
+                xSpace = Integer.parseInt((String) properties.computeIfAbsent("xSpace", o -> "2"));
+                ySpace =  Integer.parseInt((String) properties.computeIfAbsent("ySpace", o -> "0"));
+                colorAuto = ((String) properties.computeIfAbsent("colorAuto", o -> "false")).equalsIgnoreCase("true");
+                {
+                    int a, r, g, b;
+                    a = Integer.parseInt((String) properties.computeIfAbsent("colorBackgroundA", o -> "48"));
+                    r = Integer.parseInt((String) properties.computeIfAbsent("colorBackgroundR", o -> "0"));
+                    g = Integer.parseInt((String) properties.computeIfAbsent("colorBackgroundG", o -> "0"));
+                    b = Integer.parseInt((String) properties.computeIfAbsent("colorBackgroundB", o -> "0"));
+                    colorBackground = (a << 24) + (r << 16) + (g << 8) + b;
+                }
+                {
+                    int a, r, g, b;
+                    a = Integer.parseInt((String) properties.computeIfAbsent("colorNameA", o -> "128"));
+                    r = Integer.parseInt((String) properties.computeIfAbsent("colorNameR", o -> "255"));
+                    g = Integer.parseInt((String) properties.computeIfAbsent("colorNameG", o -> "255"));
+                    b = Integer.parseInt((String) properties.computeIfAbsent("colorNameB", o -> "255"));
+                    colorName = (a << 24) + (r << 16) + (g << 8) + b;
+                }
+                {
+                    int a, r, g, b;
+                    a = Integer.parseInt((String) properties.computeIfAbsent("colorDurationA", o -> "170"));
+                    r = Integer.parseInt((String) properties.computeIfAbsent("colorDurationR", o -> "255"));
+                    g = Integer.parseInt((String) properties.computeIfAbsent("colorDurationG", o -> "255"));
+                    b = Integer.parseInt((String) properties.computeIfAbsent("colorDurationB", o -> "255"));
+                    colorDuration = (a << 24) + (r << 16) + (g << 8) + b;
+                }
+            } catch (Exception e){
+                initWithDefault();
+                saveConfig();
+            }
+
+        }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
-    private static Properties getDefaultProperties(){
-        Properties _default = new Properties();
-        _default.setProperty("potion_glint",              String.valueOf(1));
-        _default.setProperty("mode",              String.valueOf(0));
-        _default.setProperty("x_offset",                 String.valueOf(5));
-        _default.setProperty("y_offset",                 String.valueOf(5));
-        _default.setProperty("x_alignment",             String.valueOf(0));
-        _default.setProperty("x_arrangement",             String.valueOf(1));
-        _default.setProperty("y_arrangement",             String.valueOf(2));
-        _default.setProperty("x_space",              String.valueOf(0));
-        _default.setProperty("y_space",              String.valueOf(1));
-        _default.setProperty("color_auto",       String.valueOf(1));
-        _default.setProperty("color_background",   String.valueOf(0x30000000));
-        _default.setProperty("color_name",         String.valueOf(0x80FFFFFF));
-        _default.setProperty("color_duration",     String.valueOf(0x40FFFFFF));
-        return _default;
+    private static void initWithDefault(){
+        potionGlint = false;
+        mode = Mode.CLASSIC;
+        xOffset = 99.9f;
+        yOffset = 0.75f;
+        xAlignment = XAxis.RIGHT;
+        xArrangement = XAxis.LEFT;
+        yArrangement = YAxis.CENTER;
+        xSpace = 2;
+        ySpace = 0;
+        colorAuto = false;
+        colorBackground = 0x30000000;
+        colorName = 0x80FFFFFF;
+        colorDuration = 0xaaFFFFFF;
     }
 
-    public static void setDefaultProperties(){
-        try (OutputStream outputStream = new FileOutputStream(propertiesPath)) {
-            dirty = true;
-            settings = getDefaultProperties();
-            settings.store(outputStream, null);
-        } catch (IOException io) {
-            io.printStackTrace();
+    private static int getXAxis(XAxis direction){
+        switch (direction){
+            case RIGHT:
+                return 1;
+            case LEFT:
+                return -1;
+            default:
+                return 0;
+        }
+    }
+    public static int getXAlignment(){
+        return getXAxis(xAlignment);
+    }
+    public static int getXArrangement(){
+        return getXAxis(xArrangement);
+    }
+    public static int getYArrangement(){
+        switch (yArrangement){
+            case UP:
+                return -1;
+            case DOWN:
+                return 1;
+            default:
+                return 0;
         }
     }
 
-    private static void createDefaultConfig(){
-        try (OutputStream outputStream = new FileOutputStream(propertiesPath)) {
-            setDefaultProperties();
-            settings.store(outputStream, null);
-        } catch (IOException io) {
-            io.printStackTrace();
-        }
-    }
-
-    private static void loadSettings(){
-        try (InputStream inputStream = new FileInputStream(propertiesPath)) {
-            settings.load(inputStream);
-        } catch (IOException io) {
-            io.printStackTrace();
-        }
-    }
-
-    public static void update(){
-        potion_glint = getProperty("potion_glint");
-        mode = getProperty("mode");
-        x_offset = getProperty("x_offset");
-        y_offset = getProperty("y_offset");
-        x_alignment = getProperty("x_alignment");
-        x_arrangement = getProperty("x_arrangement");
-        y_arrangement = getProperty("y_arrangement");
-        x_space = getProperty("x_space");
-        y_space = getProperty("y_space");
-        color_auto = getProperty("color_auto");
-        color_background = getProperty("color_background");
-        color_name = getProperty("color_name");
-        color_duration = getProperty("color_duration");
-        dirty = false;
-    }
-
-    public static boolean isDirty(){
-        return dirty;
-    }
-
-    public static int getProperty(String key){
-        return Integer.parseInt((String) settings.getOrDefault(key, "1"));
-    }
-
-    public static void setProperty(String key, String value){
-        try (OutputStream outputStream = new FileOutputStream(propertiesPath)) {
-            dirty = true;
-            settings.setProperty(key, value);
-            settings.store(outputStream, null);
-        } catch (IOException io) {
-            io.printStackTrace();
-        }
-    }
-
-    public static boolean isPotionGlintEnabled(){
-        return potion_glint == 1;
-    }
-
-    public static int getBackgroundColor(){
-        return color_background;
-    }
-    public static int getXAlignment() {
-        return (x_alignment - 1);
-    }
-    public static float getXOffset(){
-        return x_offset / 1000.0F;
-    }
-    public static float getYOffset(){
-        return y_offset / 1000.0F;
-    }
-
-    public static int getSize(){
-        return mode == 1 ? 16 : 12;
-    }
-
-    public static int getMode(){
-        return mode;
-    }
-
-    public static int getXArrangement() {
-        return (x_arrangement - 1);
-    }
-    public static int getYArrangement() {
-        return (y_arrangement - 1);
-    }
-
-    public static int getXSpace() {
-        return x_space;
-    }
-    public static int getYSpace() {
-        return y_space;
-    }
-
-    public static int getNameColor() {
-        return color_name;
-    }
-
-    public static int getDurationColor() {
-        return color_duration;
-    }
-
-    public static int getAutoColor() {
-        return color_auto;
-    }
 }

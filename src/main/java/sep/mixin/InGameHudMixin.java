@@ -34,8 +34,7 @@ public class InGameHudMixin {
     }
 
     /**
-     * @author akio
-     * @reason Disable vanilla
+     * @author me
      */
     @Overwrite
     public void renderStatusEffectOverlay(MatrixStack matrixStack){

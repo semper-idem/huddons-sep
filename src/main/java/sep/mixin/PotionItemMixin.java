@@ -16,10 +16,7 @@ public class PotionItemMixin extends Item {
     }
 
     public boolean hasGlint(ItemStack stack) {
-        if(SEPConfig.isDirty()){
-            SEPConfig.update();
-        }
-        if(SEPConfig.isPotionGlintEnabled()){
+        if(SEPConfig.potionGlint){
             return super.hasGlint(stack) || !PotionUtil.getPotionEffects(stack).isEmpty();
         } else {
             return false;

@@ -16,7 +16,8 @@
     "main": [],
     "client": [
       "sep.SEPInitializer"],
-    "server": []
+    "server": [],
+    "modmenu": [ "sep.config.SEPModMenuEntry" ]
   },
   "mixins": [
     "sep.mixins.json"
@@ -24,8 +25,5 @@
   "depends": {
     "fabricloader": ">=0.9.1",
     "fabric": "*"
-  },
-  "custom": {
-    "modmenu:clientsideOnly": true
   }
 }

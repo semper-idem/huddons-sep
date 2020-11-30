@@ -8,29 +8,22 @@ import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.util.InputUtil;
+import org.lwjgl.glfw.GLFW;
 import sep.config.SEPConfig;
-import sep.config.screen.SEPConfigGui;
-import sep.config.screen.SEPConfigScreen;
+import sep.config.SEPConfigScreen;
 
 @Environment(EnvType.CLIENT)
 public class SEPInitializer implements ClientModInitializer {
-    private static KeyBinding configKeyBinding;
+    private static  KeyBinding configKeyBinding;
 
     @Override
     public void onInitializeClient() {
-        SEPConfig.init();
-        registerKeyBind();
-
-    }
-
-    private void registerKeyBind(){
-        configKeyBinding = new KeyBinding("key.sep.config", InputUtil.Type.KEYSYM, 0, "category.sep");
-        KeyBindingHelper.registerKeyBinding(configKeyBinding);
-        ClientTickEvents.START_CLIENT_TICK.register(client ->{
-            if(configKeyBinding.wasPressed()) {
-                    MinecraftClient.getInstance().openScreen(new SEPConfigScreen(new SEPConfigGui()));
+        SEPConfig.loadConfig();
+        configKeyBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding("key.sep.name", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_KP_2, "key.sep.category"));
+        ClientTickEvents.END_CLIENT_TICK.register(minecraftClient -> {
+            while(configKeyBinding.isPressed()){
+                MinecraftClient.getInstance().openScreen(SEPConfigScreen.getConfigScreen(MinecraftClient.getInstance().currentScreen));
             }
         });
     }
-
 }

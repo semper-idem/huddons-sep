@@ -24,19 +24,18 @@ import java.util.List;
 
 @Environment(EnvType.CLIENT)
 public class StatusEffectHUDFeature extends DrawableHelper{
-    private final static Identifier NUMBERS = new Identifier("sep", "textures/nums.png");
+    private final static Identifier NUMBERS = new Identifier("sep", "textures/numbers.png");
     private final static MinecraftClient client = MinecraftClient.getInstance();
     private int scaledWidth = client.getWindow().getScaledWidth();
     private int scaledHeight = client.getWindow().getScaledHeight();
-    private int size = 0;
+    private int size = 12;
 
     public void render(MatrixStack matrixStack, Collection<StatusEffectInstance> statusEffects) {
         if(!statusEffects.isEmpty()) {
-            updateConfig();
 
-            int x = (int) (scaledWidth  * SEPConfig.getXOffset());
-            int y = (int) (scaledHeight * SEPConfig.getYOffset());
-            this.size = SEPConfig.getSize();
+            int x = (int) (scaledWidth  * (SEPConfig.xOffset / 100));
+            int y = (int) (scaledHeight * (SEPConfig.yOffset / 100));
+            this.size = SEPConfig.mode == SEPConfig.Mode.CLASSIC ? 16 : 12;
 
             List<Runnable> list = Lists.newArrayListWithExpectedSize(statusEffects.size());
             Iterator<?> it = Ordering.natural().reverse().sortedCopy(statusEffects).iterator();
@@ -47,8 +46,8 @@ public class StatusEffectHUDFeature extends DrawableHelper{
                 StatusEffectInstance sei = (StatusEffectInstance) it.next();
 
                 int length = getSEWidth(sei);
-                int x0 = x - SEPConfig.getXAlignment() * (length / 2) + ((SEPConfig.getXSpace() * i + w) * SEPConfig.getXArrangement());
-                int y0 = y                                            + ((SEPConfig.getYSpace() * i + h) * SEPConfig.getYArrangement());
+                int x0 = x - SEPConfig.getXAlignment() * (length / 2) + ((SEPConfig.xSpace * i + w) * SEPConfig.getXArrangement());
+                int y0 = y                                            + ((SEPConfig.ySpace * i + h) * SEPConfig.getYArrangement());
 
                 list.add(() -> {
                     renderSEBackground(matrixStack,sei, x0, y0, length);
@@ -63,18 +62,13 @@ public class StatusEffectHUDFeature extends DrawableHelper{
         }
     }
 
-    private void updateConfig(){
-        if(SEPConfig.isDirty()){
-            SEPConfig.update();
-        }
-    }
 
     private void renderSEBackground(MatrixStack matrixStack, StatusEffectInstance sei, int x, int y, int length){
 
         int x1 = x - (length / 2);
         int x2 = x + (length / 2);
         int y2 = y + 2 + this.size;
-        if(SEPConfig.getMode() == 1){
+        if(SEPConfig.mode == SEPConfig.Mode.CLASSIC){
             RenderSystem.enableBlend();
             RenderSystem.color4f(1.0F, 1.0F, 1.0F, 0.65F);
             client.getTextureManager().bindTexture(HandledScreen.BACKGROUND_TEXTURE);
@@ -90,7 +84,7 @@ public class StatusEffectHUDFeature extends DrawableHelper{
             RenderSystem.disableBlend();
             RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
         } else {
-            fill(matrixStack, x1, y,x2,y2, SEPConfig.getBackgroundColor());
+            fill(matrixStack, x1, y,x2,y2, SEPConfig.colorBackground);
         }
     }
 
@@ -98,7 +92,7 @@ public class StatusEffectHUDFeature extends DrawableHelper{
         int x0;
         int y0;
 
-        if(SEPConfig.getMode() == 1){
+        if(SEPConfig.mode == SEPConfig.Mode.CLASSIC){
             x0 = x - 8;
             y0 = y - 3;
         } else {
@@ -110,7 +104,7 @@ public class StatusEffectHUDFeature extends DrawableHelper{
         client.getTextureManager().bindTexture(sprite.getAtlas().getId());
         drawSprite(matrixStack, x0, y0, 1, this.size, this.size, sprite);
 
-        if(SEPConfig.getMode() == 1){
+        if(SEPConfig.mode == SEPConfig.Mode.CLASSIC){
             renderAmplifier(matrixStack, x0 + 13, y0, sei.getAmplifier() + 1);
         }
     }
@@ -128,19 +122,22 @@ public class StatusEffectHUDFeature extends DrawableHelper{
 
         String nameString = getSEText(sei);
         String durationString = getSEDuration(sei);
-        int nameColor = SEPConfig.getNameColor();
-        int durationColor = SEPConfig.getDurationColor();
+        int nameColor;
+        int durationColor;
 
         int x0 = x + 4 + this.size - (length / 2);
         int y0 = y + 3;
         int x1 = x0;
 
-        if(SEPConfig.getAutoColor() == 1){
+        if(SEPConfig.colorAuto){
             nameColor = sei.getEffectType().getColor();
-            durationColor = nameColor;
+            durationColor = sei.getEffectType().getColor();
+        } else {
+            nameColor = SEPConfig.colorName;
+            durationColor = SEPConfig.colorDuration;
         }
 
-        if(SEPConfig.getMode() == 1){
+        if(SEPConfig.mode == SEPConfig.Mode.CLASSIC){
             drawStringWithShadow(matrixStack,client.textRenderer, durationString, x - (length /2) + 4, y0+7, durationColor);
         } else {
             x1 = x1 + client.textRenderer.getWidth(nameString + " ");
@@ -158,17 +155,17 @@ public class StatusEffectHUDFeature extends DrawableHelper{
 
     private String getSEDuration(StatusEffectInstance sei) {
         String duration = StatusEffectUtil.durationToString(sei, 1.0F);
-        return sei.isAmbient() && SEPConfig.getMode() != 1 ? "* " + duration : duration;
+        return sei.isAmbient() && (SEPConfig.mode == SEPConfig.Mode.INLINE) ? "* " + duration : duration;
         //cant show more then 32767 ticks cause its short somewhere...
     }
 
     private int getSEWidth(StatusEffectInstance sei){
         String s = "  ";
-        if(SEPConfig.getMode() == 1){
+        if(SEPConfig.mode == SEPConfig.Mode.CLASSIC){
             s += getSEDuration(sei);
         } else {
             s += getSEText(sei) + getSEDuration(sei) + this.size + " ";
         }
-        return Math.max(client.textRenderer.getWidth("  0:00"), client.textRenderer.getWidth(s));
+        return Math.max(client.textRenderer.getWidth(" 0:00"), client.textRenderer.getWidth(s));
     }
 }
