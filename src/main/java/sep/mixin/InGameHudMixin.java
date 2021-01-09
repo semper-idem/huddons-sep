@@ -19,7 +19,6 @@ import sep.features.StatusEffectHUDFeature;
 @Environment(EnvType.CLIENT)
 @Mixin(InGameHud.class)
 public class InGameHudMixin {
-
     @Shadow
     @Final
     private MinecraftClient client;
@@ -27,17 +26,15 @@ public class InGameHudMixin {
     @Inject(method = "render",at = @At("HEAD"))
     private void onRender(MatrixStack matrixStack, float f, CallbackInfo cbi) {
             if(!(client.currentScreen instanceof AbstractInventoryScreen)){
-                if(client.player != null){
-                    new StatusEffectHUDFeature().render(matrixStack, client.player.getStatusEffects());
+                    if(client.player != null){
+                        new StatusEffectHUDFeature().render(matrixStack, client.player.getStatusEffects());
                 }
             }
     }
 
-    /**
-     * @author me
-     */
-    @Overwrite
-    public void renderStatusEffectOverlay(MatrixStack matrixStack){
+    @Inject(method = "renderStatusEffectOverlay",at = @At("HEAD"), cancellable =  true)
+    private void onRenderStatusEffectOverlay(CallbackInfo c){
+        c.cancel();
     }
 
 }

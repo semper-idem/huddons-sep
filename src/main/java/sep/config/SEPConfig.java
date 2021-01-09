@@ -24,10 +24,19 @@ public class SEPConfig {
         CENTER,
         DOWN
     }
+
+    public enum InvEffects {
+        MODDED,
+        VANILLA,
+        NONE
+    }
+
+
     private static File configFile = new File(Paths.get("").toAbsolutePath().toString() + "/config/statuseffectsplus.properties");
 
     public static boolean potionGlint;
     public static Mode mode;
+    public static InvEffects invEffects;
     public static float xOffset;
     public static float yOffset;
     public static XAxis xAlignment;
@@ -45,6 +54,7 @@ public class SEPConfig {
         fos.write(("# Status Effect Plus Config | " + LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) + "\n").getBytes());
         fos.write(("potionGlint=" + potionGlint+"\n").getBytes());
         fos.write(("mode=" + mode+"\n").getBytes());
+        fos.write(("invEffects=" + invEffects+"\n").getBytes());
         fos.write(("xOffset=" + xOffset+"\n").getBytes());
         fos.write(("yOffset=" + yOffset+"\n").getBytes());
         fos.write(("xAlignment=" + xAlignment+"\n").getBytes());
@@ -86,6 +96,7 @@ public class SEPConfig {
             try{
                 potionGlint = ((String) properties.computeIfAbsent("potionGlint", a -> "true")).equalsIgnoreCase("true");
                 mode = Mode.valueOf((String) properties.computeIfAbsent("mode", o -> Mode.CLASSIC));
+                invEffects = InvEffects.valueOf((String) properties.computeIfAbsent("invEffects", o -> InvEffects.MODDED));
                 xOffset = Float.parseFloat((String) properties.computeIfAbsent("xOffset", o -> "99.9"));
                 yOffset = Float.parseFloat((String) properties.computeIfAbsent("yOffset", o -> "0.75"));
                 xAlignment = XAxis.valueOf((String)properties.computeIfAbsent("xAlignment", o -> XAxis.RIGHT));
@@ -132,6 +143,7 @@ public class SEPConfig {
     private static void initWithDefault(){
         potionGlint = false;
         mode = Mode.CLASSIC;
+        invEffects = InvEffects.MODDED;
         xOffset = 99.9f;
         yOffset = 0.75f;
         xAlignment = XAxis.RIGHT;

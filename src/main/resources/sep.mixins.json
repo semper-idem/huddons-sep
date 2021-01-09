@@ -3,10 +3,11 @@
   "package": "sep.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "PotionItemMixin"
   ],
   "client": [
-    "InGameHudMixin"
+    "InGameHudMixin",
+    "PotionItemMixin",
+    "AbstractInventoryScreenMixin"
   ],
   "server": [],
   "injectors": {

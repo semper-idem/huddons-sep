@@ -50,6 +50,7 @@ public class StatusEffectHUDFeature extends DrawableHelper{
                 int y0 = y                                            + ((SEPConfig.ySpace * i + h) * SEPConfig.getYArrangement());
 
                 list.add(() -> {
+                    RenderSystem.color4f(1f,1f,1f,1f);
                     renderSEBackground(matrixStack,sei, x0, y0, length);
                     renderSEIcon(matrixStack, sei, x0, y0, length);
                     renderSEText(matrixStack, sei, x0, y0, length);

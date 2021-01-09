@@ -137,6 +137,24 @@ public class SEPConfigScreen {
                 .setTooltip(new TranslatableText("config.sep.colorDuration.tooltip"))
                 .build());
 
+
+        general.addEntry(entryBuilder.startSelector(new TranslatableText("config.sep.invEffects"), SEPConfig.InvEffects.values(), SEPConfig.invEffects)
+                .setDefaultValue(SEPConfig.InvEffects.MODDED)
+                .setNameProvider(value ->{
+                    if(value.equals(SEPConfig.InvEffects.MODDED)){
+                        return new TranslatableText("config.sep.invEffects.modded");
+                    } else if(value.equals(SEPConfig.InvEffects.VANILLA)){
+                        return new TranslatableText("config.sep.invEffects.vanilla");
+                    }else if(value.equals(SEPConfig.InvEffects.NONE)){
+                        return new TranslatableText("config.sep.invEffects.none");
+                    }
+                    return new LiteralText("Error");
+                })
+                .setSaveConsumer(value -> SEPConfig.invEffects = value)
+                .setTooltip(new TranslatableText("config.sep.invEffects.tooltip"))
+                .build());
+
+
         return builder.setSavingRunnable(()->{
             try {
                 SEPConfig.saveConfig();
